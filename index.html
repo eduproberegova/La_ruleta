@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>La ruleta de las condiciones · Español</title>
+<meta name="description" content="Ruleta interactiva para practicar las oraciones condicionales en español: si + imperfecto / pluscuamperfecto de subjuntivo.">
+<meta name="author" content="Beregova Olga · @eduproberegova">
+<meta name="theme-color" content="#C8203F">
+<meta property="og:type" content="website">
+<meta property="og:title" content="La ruleta de las condiciones">
+<meta property="og:description" content="Si… + imperfecto / pluscuamperfecto de subjuntivo. ¡Gira la ruleta y completa la frase!">
+<meta property="og:image" content="og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#C8203F; --red-dark:#A3172F;
+  --blue:#B3D1ED; --blue-soft:#DCEAF7; --bg:#F3F7FB;
+  --ink:#1E2A44; --muted:#5B6B80; --line:#D5E2EF;
+  --teal:#0E8577; --card:#FFFFFF;
+  --head:'Bricolage Grotesque', system-ui, sans-serif;
+  --body:'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--body);
+  font-size:17px; line-height:1.45; -webkit-text-size-adjust:100%;
+  min-height:100vh; display:flex; flex-direction:column;
+}
+button{font:inherit; color:inherit; cursor:pointer}
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{outline:3px solid var(--blue); outline-offset:2px}
+
+/* ---------- header ---------- */
+.top{
+  max-width:1180px; width:100%; margin:0 auto; padding:18px 22px 0;
+  display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+  border-bottom:2px solid var(--blue-soft); padding-bottom:10px;
+}
+.eyebrow{font-family:var(--head); font-weight:800; letter-spacing:.04em; color:#2747D8; font-size:15px}
+.eyebrow span{color:var(--muted); font-weight:600; margin:0 6px}
+.brand{font-family:var(--head); font-weight:600; color:var(--teal); font-size:15px}
+.brand b{color:var(--red)}
+
+main{max-width:1180px; width:100%; margin:0 auto; padding:18px 22px 30px; flex:1}
+.title-row{margin:6px 0 18px}
+.kicker{font-family:var(--mono); font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--teal); font-weight:700}
+h1{font-family:var(--head); font-weight:800; font-size:clamp(28px,4.2vw,46px); line-height:1.05; margin:4px 0 6px; letter-spacing:-.01em}
+.sub{font-family:var(--head); font-weight:600; font-size:clamp(17px,2vw,22px); color:var(--muted); margin:0}
+.sub em{font-style:normal; color:var(--red)}
+
+/* ---------- layout ---------- */
+.stage{display:grid; grid-template-columns:minmax(300px,560px) 1fr; gap:34px; align-items:start}
+@media (max-width:900px){ .stage{grid-template-columns:1fr; gap:22px} }
+
+/* ---------- wheel ---------- */
+.wheel-col{display:flex; flex-direction:column; align-items:center; gap:16px}
+.wheel-wrap{position:relative; width:100%; max-width:560px; aspect-ratio:1/1; margin-top:14px}
+.wheel-wrap canvas{width:100%; height:100%; display:block; border-radius:50%;
+  box-shadow:0 0 0 8px #fff, 0 0 0 10px var(--blue), 0 18px 40px rgba(30,42,68,.18); touch-action:manipulation; cursor:pointer}
+.pointer{position:absolute; left:50%; top:-22px; transform:translateX(-50%); width:44px; height:52px; z-index:3; pointer-events:none;
+  filter:drop-shadow(0 3px 3px rgba(0,0,0,.25))}
+.hub{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:23%; aspect-ratio:1/1; border-radius:50%; border:6px solid #fff;
+  background:var(--red); color:#fff; font-family:var(--head); font-weight:800;
+  font-size:clamp(15px,2.6vw,22px); letter-spacing:.03em; z-index:2;
+  box-shadow:0 4px 14px rgba(0,0,0,.28); transition:transform .15s, background .2s;
+}
+.hub:hover{background:var(--red-dark)}
+.hub:active{transform:translate(-50%,-50%) scale(.96)}
+.hub[disabled]{background:#8C97A6; cursor:default}
+.spin-btn{
+  border:0; border-radius:999px; background:var(--red); color:#fff; padding:14px 34px;
+  font-family:var(--head); font-weight:800; font-size:20px; box-shadow:0 6px 16px rgba(200,32,63,.3);
+}
+.spin-btn:hover{background:var(--red-dark)}
+.spin-btn[disabled]{background:#8C97A6; box-shadow:none; cursor:default}
+.hint-key{font-size:13px; color:var(--muted); font-family:var(--mono)}
+@media (hover:none){ .hint-key{display:none} }
+.counter{font-family:var(--mono); font-size:13px; color:var(--muted)}
+
+/* ---------- side panel ---------- */
+.panel{display:flex; flex-direction:column; gap:16px}
+.card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px 20px; box-shadow:0 2px 0 rgba(30,42,68,.03)}
+.card h2{font-family:var(--mono); font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--teal); margin:0 0 8px; font-weight:700}
+
+.result{border:2px solid var(--blue); background:linear-gradient(180deg,#fff, var(--blue-soft)); min-height:170px; position:relative; overflow:hidden}
+.result .stripe{position:absolute; left:0; top:0; bottom:0; width:10px; background:var(--blue)}
+.result-inner{padding-left:6px}
+.phrase{font-family:var(--head); font-weight:800; font-size:clamp(26px,3.4vw,40px); line-height:1.1; margin:6px 0 12px; min-height:1.1em}
+.phrase.placeholder{color:#93A2B5; font-weight:600; font-size:clamp(20px,2.4vw,26px)}
+.phrase.pop{animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(.92); opacity:.2}60%{transform:scale(1.03); opacity:1}100%{transform:scale(1)}}
+.tag{display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap; background:#fff; border:1px solid var(--line); border-radius:999px; padding:6px 14px; font-size:15px}
+.tag[hidden]{display:none}
+.tag b{color:var(--red)}
+.tag .arrow{color:var(--muted)}
+.actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+.btn{border:1.5px solid var(--ink); background:#fff; border-radius:999px; padding:8px 16px; font-weight:600; font-size:15px}
+.btn:hover{background:var(--blue-soft)}
+.btn.solid{background:var(--ink); color:#fff}
+.btn.solid:hover{background:#2D3D5E}
+.btn.small{padding:5px 12px; font-size:14px}
+.btn[hidden]{display:none}
+.example{margin-top:12px; padding:10px 14px; background:#fff; border-left:4px solid var(--teal); border-radius:8px; font-style:italic}
+.example[hidden]{display:none}
+.timer{font-family:var(--mono); font-weight:700; font-size:22px; padding:4px 14px; border-radius:999px; background:var(--ink); color:#fff; display:inline-flex; align-items:center}
+.timer.warn{background:var(--red)}
+.timer[hidden]{display:none}
+
+.rules p{margin:0 0 10px}
+.rules p:last-child{margin-bottom:0}
+.rules .model{font-style:italic}
+.formula{display:flex; flex-direction:column; gap:8px; margin-top:4px}
+.formula .pill{display:inline-block; margin-right:6px; font-family:var(--mono); font-size:12px; font-weight:700; border-radius:6px; padding:3px 8px; color:#fff; white-space:nowrap}
+.pill.imp{background:#2747D8}
+.pill.plu{background:#677787}
+
+/* ---------- tools ---------- */
+.tools{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+.switch{display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:999px; padding:7px 14px; font-weight:600; font-size:15px; cursor:pointer; user-select:none}
+.switch input{width:18px; height:18px; accent-color:var(--red); margin:0}
+
+/* ---------- teams ---------- */
+.teams-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap}
+.teams-head select{font:inherit; padding:5px 8px; border-radius:8px; border:1px solid var(--line); background:#fff}
+.teams{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:10px; margin-top:12px}
+.team{display:flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:8px 10px}
+.team input{flex:1; min-width:0; border:0; background:transparent; font:inherit; font-weight:700; color:var(--ink); padding:4px 2px}
+.team .score{font-family:var(--mono); font-weight:700; font-size:22px; min-width:2ch; text-align:center}
+.team button{width:32px; height:32px; border-radius:50%; border:1.5px solid var(--ink); background:#fff; font-weight:700; line-height:1; padding:0}
+.team button.plus{background:var(--red); border-color:var(--red); color:#fff}
+.team.lead{border-color:var(--red); background:#FFF4F6}
+
+/* ---------- modal ---------- */
+.modal{position:fixed; inset:0; background:rgba(30,42,68,.45); display:flex; align-items:center; justify-content:center; padding:16px; z-index:20}
+.modal[hidden]{display:none}
+.modal-box{background:#fff; border-radius:18px; width:min(640px,100%); max-height:92vh; overflow:auto; padding:22px}
+.modal-box h3{font-family:var(--head); font-weight:800; font-size:24px; margin:0 0 6px}
+.modal-box p{margin:0 0 10px; color:var(--muted); font-size:15px}
+.modal-box textarea{width:100%; min-height:300px; border:1.5px solid var(--line); border-radius:12px; padding:12px; font:inherit; font-size:16px; line-height:1.6; resize:vertical}
+.modal-actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; margin-top:12px}
+.err{color:var(--red); font-weight:600; min-height:1.2em; font-size:15px}
+
+footer{border-top:2px solid var(--blue-soft); padding:14px 22px; text-align:center; color:var(--muted); font-size:14px}
+footer b{color:var(--red)}
+
+/* ---------- fullscreen / projector ---------- */
+body.fs .top, body.fs footer{display:none}
+@media (prefers-reduced-motion:reduce){ .phrase.pop{animation:none} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="eyebrow">ESPAÑOL<span>/</span>AMÉRICA LATINA</div>
+  <div class="brand">Beregova Olga · <b>@eduproberegova</b></div>
+</header>
+
+<main>
+  <div class="title-row">
+    <div class="kicker">Ejercicio 71 · Juego</div>
+    <h1>La ruleta de las condiciones</h1>
+    <p class="sub">Si… + <em>imperfecto</em> / <em>pluscuamperfecto</em> de subjuntivo</p>
+  </div>
+
+  <div class="stage">
+    <section class="wheel-col" aria-label="Ruleta">
+      <div class="wheel-wrap" id="wheelWrap">
+        <svg class="pointer" viewBox="0 0 44 52" aria-hidden="true"><path d="M4 4 H40 L22 48 Z" fill="#1E2A44" stroke="#fff" stroke-width="4" stroke-linejoin="round"/></svg>
+        <canvas id="wheel" aria-label="Ruleta con frases condicionales" role="img"></canvas>
+        <button class="hub" id="hub" type="button" aria-label="Girar la ruleta">GIRA</button>
+      </div>
+      <button class="spin-btn" id="spinBtn" type="button">¡Girar la ruleta!</button>
+      <div class="counter" id="counter"></div>
+      <div class="hint-key">Tecla espacio = girar</div>
+    </section>
+
+    <section class="panel">
+      <div class="card result" aria-live="polite">
+        <div class="stripe" id="stripe"></div>
+        <div class="result-inner">
+          <h2>Tu frase</h2>
+          <div class="phrase placeholder" id="phrase">Gira la ruleta…</div>
+          <div class="tag" id="tag" hidden></div>
+          <div class="actions">
+            <button class="btn" id="exBtn" type="button" hidden>Ver ejemplo</button>
+            <button class="btn" id="timerBtn" type="button" hidden>⏱ 1 minuto para pensar</button>
+            <span class="timer" id="timer" hidden>1:00</span>
+          </div>
+          <div class="example" id="example" hidden></div>
+        </div>
+      </div>
+
+      <div class="card rules">
+        <h2>Instrucciones</h2>
+        <p>En grupos: gira la ruleta y completa la frase con una <b>consecuencia lógica</b> y una <b>original</b>. El grupo vota la respuesta más original.</p>
+        <p class="model"><b style="font-style:normal">Modelo:</b> Si fuera Bad Bunny por un día, daría un concierto gratis en Kyiv y después me quedaría en casa viendo series.</p>
+        <div class="formula">
+          <div><span class="pill imp">si + imperfecto</span> → condicional simple <i>(tuviera → compraría)</i></div>
+          <div><span class="pill plu">si + pluscuamperfecto</span> → condicional compuesto <i>(hubiera nacido → habría crecido)</i></div>
+        </div>
+      </div>
+
+      <div class="tools">
+        <label class="switch"><input type="checkbox" id="noRepeat"> Sin repetir</label>
+        <label class="switch"><input type="checkbox" id="sound" checked> Sonido</label>
+        <button class="btn small" id="resetBtn" type="button">↺ Reiniciar</button>
+        <button class="btn small" id="editBtn" type="button">✎ Editar frases</button>
+        <button class="btn small" id="fsBtn" type="button">⛶ Pantalla completa</button>
+      </div>
+
+      <div class="card">
+        <div class="teams-head">
+          <h2 style="margin:0">Puntos por equipos</h2>
+          <div style="display:flex; gap:8px; align-items:center">
+            <label for="teamCount" style="font-size:15px">Equipos:</label>
+            <select id="teamCount">
+              <option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option>
+            </select>
+            <button class="btn small" id="zeroBtn" type="button">Poner a cero</button>
+          </div>
+        </div>
+        <div class="teams" id="teams"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>© Beregova Olga · <b>@eduproberegova</b> · Español · América Latina</footer>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal-box">
+    <h3 id="mTitle">Editar frases</h3>
+    <p>Una frase por línea (de 2 a 24). Las frases con <i>hubiera / hubiese</i> se marcan como pluscuamperfecto. Los cambios se guardan en este dispositivo.</p>
+    <textarea id="editArea" spellcheck="false"></textarea>
+    <div class="err" id="editErr"></div>
+    <div class="modal-actions">
+      <button class="btn" id="restoreBtn" type="button">Restablecer originales</button>
+      <button class="btn" id="cancelBtn" type="button">Cancelar</button>
+      <button class="btn solid" id="saveBtn" type="button">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+
+  /* ---------- data ---------- */
+  var DEFAULTS = [
+    { t: 'Si tuviera un millón de dólares…', c: '#0E8577', ex: 'Si tuviera un millón de dólares, compraría una casa junto al mar y viajaría por toda América Latina.' },
+    { t: 'Si pudiera vivir en otro país…',   c: '#2747D8', ex: 'Si pudiera vivir en otro país, viviría en Chile porque me encantan las montañas.' },
+    { t: 'Si hablara quechua…',              c: '#B8324A', ex: 'Si hablara quechua, podría hablar con la gente de los pueblos de los Andes.' },
+    { t: 'Si fuera Bad Bunny por un día…',   c: '#E9A21F', ex: 'Si fuera Bad Bunny por un día, daría un concierto gratis en Kyiv.' },
+    { t: 'Si hubiera nacido en México…',     c: '#3AAA90', ex: 'Si hubiera nacido en México, habría crecido comiendo tacos. / …ahora hablaría español perfectamente.' },
+    { t: 'Si no existiera internet…',        c: '#1E2A44', ex: 'Si no existiera internet, escribiríamos cartas a mano y leeríamos más libros.' },
+    { t: 'Si hubiera vivido con los incas…', c: '#677787', ex: 'Si hubiera vivido con los incas, habría ayudado a construir Machu Picchu.' },
+    { t: 'Si mi amigo fuera argentino…',     c: '#E07A35', ex: 'Si mi amigo fuera argentino, tomaríamos mate juntos y me enseñaría a bailar tango.' },
+    { t: 'Si pudiera viajar en el tiempo…',  c: '#7B5BB0', ex: 'Si pudiera viajar en el tiempo, visitaría Tenochtitlan antes de la llegada de los españoles.' },
+    { t: 'Si fuera presidente/a…',           c: '#2E9A86', ex: 'Si fuera presidenta, la educación sería gratuita para todos.' }
+  ];
+  var PALETTE = ['#0E8577','#2747D8','#B8324A','#E9A21F','#3AAA90','#1E2A44','#677787','#E07A35','#7B5BB0','#2E9A86','#C8203F','#4F8FCB'];
+  var KEY = 'ruleta-condiciones-v1';
+
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        custom: customLines, noRepeat: noRepeatEl.checked, sound: soundEl.checked,
+        teamCount: teamCount, teams: teams
+      }));
+    } catch (e) {}
+  }
+
+  var stored = load();
+  var customLines = Array.isArray(stored.custom) ? stored.custom : null;
+  var items = [];
+  function buildItems() {
+    if (customLines && customLines.length >= 2) {
+      items = customLines.map(function (t, i) {
+        var d = DEFAULTS.filter(function (x) { return x.t === t; })[0];
+        return { t: t, c: d ? d.c : PALETTE[i % PALETTE.length], ex: d ? d.ex : '' };
+      });
+      // avoid two neighbours with the same colour
+      for (var i = 1; i < items.length; i++) {
+        if (items[i].c === items[i - 1].c || (i === items.length - 1 && items[i].c === items[0].c)) {
+          items[i].c = PALETTE[(PALETTE.indexOf(items[i].c) + 3) % PALETTE.length];
+        }
+      }
+    } else {
+      items = DEFAULTS.map(function (d) { return { t: d.t, c: d.c, ex: d.ex }; });
+    }
+    items.forEach(function (it) { it.plu = /\bhubie(ra|se)/i.test(it.t); });
+  }
+  buildItems();
+
+  /* ---------- elements ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+  var canvas = $('wheel'), ctx = canvas.getContext('2d'), wrap = $('wheelWrap');
+  var hub = $('hub'), spinBtn = $('spinBtn'), counterEl = $('counter');
+  var phraseEl = $('phrase'), tagEl = $('tag'), stripe = $('stripe');
+  var exBtn = $('exBtn'), exEl = $('example'), timerBtn = $('timerBtn'), timerEl = $('timer');
+  var noRepeatEl = $('noRepeat'), soundEl = $('sound');
+  noRepeatEl.checked = !!stored.noRepeat;
+  if (stored.sound === false) soundEl.checked = false;
+
+  /* ---------- state ---------- */
+  var TAU = Math.PI * 2;
+  var rot = 0, spinning = false, used = {}, current = -1;
+  var off = document.createElement('canvas'), offCtx = off.getContext('2d');
+  var size = 0, dpr = 1;
+
+  function rand() {
+    if (window.crypto && crypto.getRandomValues) { var a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] / 4294967296; }
+    return Math.random();
+  }
+  function mod(a, n) { return ((a % n) + n) % n; }
+  function seg() { return TAU / items.length; }
+  function indexAt(r) { return Math.floor(mod(-r, TAU) / seg()) % items.length; }
+
+  /* ---------- colour helpers ---------- */
+  function lum(hex) {
+    var n = parseInt(hex.slice(1), 16), rgb = [n >> 16 & 255, n >> 8 & 255, n & 255].map(function (v) {
+      v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+  }
+  function textColor(hex) {
+    var L = lum(hex), white = 1.05 / (L + 0.05), dark = (L + 0.05) / (lum('#1E2A44') + 0.05);
+    return white >= dark ? '#FFFFFF' : '#1E2A44';
+  }
+
+  /* ---------- drawing ---------- */
+  function setup() {
+    var w = wrap.clientWidth;
+    if (!w) return;
+    dpr = Math.min(window.devicePixelRatio || 1, 3);
+    size = Math.round(w * dpr);
+    canvas.width = canvas.height = off.width = off.height = size;
+    renderWheel();
+    draw();
+  }
+
+  function splitTwo(text) {
+    var words = text.split(' ');
+    if (words.length < 2) return [text];
+    var best = null, bestDiff = Infinity;
+    for (var i = 1; i < words.length; i++) {
+      var a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
+      var d = Math.abs(a.length - b.length);
+      if (d < bestDiff) { bestDiff = d; best = [a, b]; }
+    }
+    return best;
+  }
+
+  function renderWheel() {
+    var c = offCtx, S = size, R = S / 2, n = items.length, s = seg();
+    c.clearRect(0, 0, S, S);
+    c.save();
+    c.translate(R, R);
+    for (var i = 0; i < n; i++) {
+      var a0 = i * s - Math.PI / 2, a1 = a0 + s;
+      var faded = noRepeatEl.checked && used[i] && i !== current;
+      c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, R, a0, a1); c.closePath();
+      c.fillStyle = items[i].c; c.globalAlpha = faded ? 0.22 : 1; c.fill();
+      c.globalAlpha = 1;
+      c.lineWidth = Math.max(2, S * 0.006); c.strokeStyle = '#fff'; c.stroke();
+    }
+    // highlight current
+    if (current >= 0 && current < n) {
+      var h0 = current * s - Math.PI / 2;
+      c.beginPath(); c.arc(0, 0, R - S * 0.012, h0 + 0.012, h0 + s - 0.012);
+      c.lineWidth = S * 0.022; c.strokeStyle = 'rgba(255,255,255,.95)'; c.stroke();
+    }
+    // texts
+    var inner = R * 0.28, outer = R * 0.91, L = outer - inner;
+    var base = R * 0.07, minF = R * 0.042;
+    for (var j = 0; j < n; j++) {
+      var mid = j * s + s / 2 - Math.PI / 2;
+      var fadedT = noRepeatEl.checked && used[j] && j !== current;
+      var lines = [items[j].t], f = base;
+      var fam = "'Source Sans 3', system-ui, sans-serif";
+      c.font = '700 ' + f + 'px ' + fam;
+      if (c.measureText(items[j].t).width > L) {
+        lines = splitTwo(items[j].t);
+      }
+      // limit by angular width (at ~55% radius)
+      var maxByArc = (R * 0.55 * s * 0.8) / lines.length;
+      f = Math.min(f, maxByArc);
+      c.font = '700 ' + f + 'px ' + fam;
+      var widest = Math.max.apply(null, lines.map(function (l) { return c.measureText(l).width; }));
+      if (widest > L) f = Math.max(minF, f * L / widest);
+      c.font = '700 ' + f + 'px ' + fam;
+
+      c.save();
+      var right = Math.cos(mid) >= -1e-6;
+      c.rotate(right ? mid : mid + Math.PI);
+      c.textAlign = right ? 'right' : 'left';
+      c.textBaseline = 'middle';
+      c.fillStyle = textColor(items[j].c);
+      c.globalAlpha = fadedT ? 0.45 : 1;
+      var x = right ? outer : -outer, lh = f * 1.12;
+      lines.forEach(function (ln, k) {
+        var y = (k - (lines.length - 1) / 2) * lh;
+        c.fillText(ln, x, y, L);
+      });
+      c.restore();
+    }
+    c.restore();
+  }
+
+  function draw() {
+    var S = size, R = S / 2;
+    ctx.clearRect(0, 0, S, S);
+    ctx.save();
+    ctx.translate(R, R); ctx.rotate(rot); ctx.drawImage(off, -R, -R);
+    ctx.restore();
+  }
+
+  /* ---------- sound ---------- */
+  var actx = null;
+  function audio() {
+    if (!soundEl.checked) return null;
+    try {
+      if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+    } catch (e) { actx = null; }
+    return actx;
+  }
+  function beep(freq, dur, vol, type) {
+    var a = audio(); if (!a) return;
+    var o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
+    o.type = type || 'square'; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.02);
+  }
+  function tick() { beep(1400, 0.03, 0.05, 'square'); }
+  function fanfare() { [523, 659, 784].forEach(function (f, i) { setTimeout(function () { beep(f, 0.18, 0.08, 'triangle'); }, i * 110); }); }
+
+  /* ---------- spin ---------- */
+  function available() {
+    var list = [];
+    for (var i = 0; i < items.length; i++) if (!(noRepeatEl.checked && used[i])) list.push(i);
+    return list;
+  }
+
+  function updateCounter() {
+    if (noRepeatEl.checked) {
+      var left = available().length;
+      counterEl.textContent = 'Quedan ' + left + ' de ' + items.length + ' frases';
+    } else counterEl.textContent = items.length + ' frases en la ruleta';
+  }
+
+  function setBusy(b) { spinning = b; hub.disabled = b; spinBtn.disabled = b; }
+
+  function spin() {
+    if (spinning) return;
+    var list = available();
+    if (!list.length) { showAllDone(); return; }
+    audio(); // unlock audio on user gesture (iOS)
+    stopTimer();
+    var target = list[Math.floor(rand() * list.length)];
+    var f = 0.18 + rand() * 0.64;
+    var base = -(target + f) * seg();
+    var delta = mod(base - rot, TAU);
+    var turns = 5 + Math.floor(rand() * 3);
+    var start = rot, end = rot + delta + turns * TAU;
+    var dur = 4800 + rand() * 1400, t0 = null, lastIdx = indexAt(rot);
+    current = -1; renderWheel();
+    setBusy(true);
+    phraseEl.className = 'phrase placeholder'; phraseEl.textContent = 'Girando…';
+    tagEl.hidden = true; exBtn.hidden = true; exEl.hidden = true; timerBtn.hidden = true;
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) dur = 900;
+
+    function frame(ts) {
+      if (t0 === null) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      var e = 1 - Math.pow(1 - p, 4);
+      rot = start + (end - start) * e;
+      var idx = indexAt(rot);
+      if (idx !== lastIdx) { lastIdx = idx; tick(); }
+      draw();
+      if (p < 1) requestAnimationFrame(frame);
+      else { rot = mod(end, TAU); finish(target); }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function finish(i) {
+    current = i; used[i] = true;
+    renderWheel(); draw();
+    var it = items[i];
+    phraseEl.className = 'phrase'; void phraseEl.offsetWidth; phraseEl.className = 'phrase pop';
+    phraseEl.textContent = it.t;
+    stripe.style.background = it.c;
+    tagEl.innerHTML = it.plu
+      ? '<b>si + pluscuamperfecto de subjuntivo</b><span class="arrow">→</span> condicional compuesto <span class="arrow">(o condicional simple para el presente)</span>'
+      : '<b>si + imperfecto de subjuntivo</b><span class="arrow">→</span> condicional simple';
+    tagEl.hidden = false;
+    exBtn.hidden = !it.ex; exBtn.textContent = 'Ver ejemplo'; exEl.textContent = it.ex; exEl.hidden = true;
+    timerBtn.hidden = false;
+    updateCounter();
+    fanfare();
+    setBusy(false);
+  }
+
+  function showAllDone() {
+    phraseEl.className = 'phrase placeholder';
+    phraseEl.textContent = '¡Ya han salido todas las frases!';
+    tagEl.hidden = true; exBtn.hidden = true; exEl.hidden = true; timerBtn.hidden = true;
+    stripe.style.background = '';
+    counterEl.innerHTML = '';
+    var b = document.createElement('button'); b.className = 'btn small'; b.textContent = 'Empezar de nuevo';
+    b.onclick = resetWheel; counterEl.appendChild(b);
+  }
+
+  function resetWheel() {
+    if (spinning) return;
+    used = {}; current = -1; stopTimer();
+    phraseEl.className = 'phrase placeholder'; phraseEl.textContent = 'Gira la ruleta…';
+    tagEl.hidden = true; exBtn.hidden = true; exEl.hidden = true; timerBtn.hidden = true;
+    stripe.style.background = '';
+    renderWheel(); draw(); updateCounter();
+  }
+
+  hub.addEventListener('click', spin);
+  spinBtn.addEventListener('click', spin);
+  canvas.addEventListener('click', spin);
+  document.addEventListener('keydown', function (e) {
+    if (!$('modal').hidden) { if (e.key === 'Escape') closeModal(); return; }
+    if (!(e.code === 'Space' || e.key === ' ') || e.repeat) return;
+    var el = e.target || {}, tag = el.tagName || '';
+    var typing = tag === 'TEXTAREA' || tag === 'SELECT' || (tag === 'INPUT' && el.type !== 'checkbox');
+    if (typing) return;
+    e.preventDefault();
+    if (el.blur && el !== document.body) el.blur();
+    spin();
+  });
+
+  exBtn.addEventListener('click', function () {
+    exEl.hidden = !exEl.hidden;
+    exBtn.textContent = exEl.hidden ? 'Ver ejemplo' : 'Ocultar ejemplo';
+  });
+
+  noRepeatEl.addEventListener('change', function () { renderWheel(); draw(); updateCounter(); save(); });
+  soundEl.addEventListener('change', save);
+  $('resetBtn').addEventListener('click', resetWheel);
+
+  /* ---------- timer ---------- */
+  var timerId = null, timeLeft = 0;
+  function fmt(s) { return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+  function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; timerEl.hidden = true; timerEl.classList.remove('warn'); }
+  timerBtn.addEventListener('click', function () {
+    stopTimer(); audio();
+    timeLeft = 60; timerEl.textContent = fmt(timeLeft); timerEl.hidden = false; timerBtn.hidden = true;
+    timerId = setInterval(function () {
+      timeLeft--;
+      timerEl.textContent = fmt(Math.max(0, timeLeft));
+      if (timeLeft <= 10) timerEl.classList.add('warn');
+      if (timeLeft <= 0) {
+        clearInterval(timerId); timerId = null;
+        timerEl.textContent = '¡Tiempo!';
+        beep(880, 0.25, 0.1, 'sine'); setTimeout(function () { beep(660, 0.4, 0.1, 'sine'); }, 260);
+      }
+    }, 1000);
+  });
+
+  /* ---------- fullscreen ---------- */
+  var fsBtn = $('fsBtn');
+  var de = document.documentElement;
+  var canFs = de.requestFullscreen || de.webkitRequestFullscreen;
+  if (!canFs) fsBtn.hidden = true;
+  fsBtn.addEventListener('click', function () {
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else (de.requestFullscreen || de.webkitRequestFullscreen).call(de);
+  });
+  function fsChange() {
+    var on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    document.body.classList.toggle('fs', on);
+    fsBtn.textContent = on ? '⛶ Salir de pantalla completa' : '⛶ Pantalla completa';
+    setTimeout(setup, 60);
+  }
+  document.addEventListener('fullscreenchange', fsChange);
+  document.addEventListener('webkitfullscreenchange', fsChange);
+
+  /* ---------- edit ---------- */
+  var modal = $('modal'), area = $('editArea'), err = $('editErr');
+  function openModal() {
+    if (spinning) return;
+    area.value = items.map(function (i) { return i.t; }).join('\n');
+    err.textContent = ''; modal.hidden = false; area.focus();
+  }
+  function closeModal() { modal.hidden = true; }
+  $('editBtn').addEventListener('click', openModal);
+  $('cancelBtn').addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  $('restoreBtn').addEventListener('click', function () { area.value = DEFAULTS.map(function (d) { return d.t; }).join('\n'); err.textContent = ''; });
+  $('saveBtn').addEventListener('click', function () {
+    var lines = area.value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+    if (lines.length < 2) { err.textContent = 'Escribe al menos 2 frases.'; return; }
+    if (lines.length > 24) { err.textContent = 'Máximo 24 frases (ahora hay ' + lines.length + ').'; return; }
+    var same = lines.length === DEFAULTS.length && lines.every(function (l, i) { return l === DEFAULTS[i].t; });
+    customLines = same ? null : lines;
+    buildItems(); save(); closeModal(); resetWheel();
+  });
+
+  /* ---------- teams ---------- */
+  var teamCount = Math.min(6, Math.max(2, parseInt(stored.teamCount, 10) || 3));
+  var teams = Array.isArray(stored.teams) ? stored.teams : [];
+  var teamsEl = $('teams'), countSel = $('teamCount');
+  countSel.value = String(teamCount);
+  function ensureTeams() {
+    for (var i = 0; i < 6; i++) if (!teams[i]) teams[i] = { n: 'Equipo ' + (i + 1), p: 0 };
+  }
+  function renderTeams() {
+    ensureTeams();
+    teamsEl.innerHTML = '';
+    var shown = teams.slice(0, teamCount);
+    var max = Math.max.apply(null, shown.map(function (t) { return t.p; }));
+    shown.forEach(function (t, i) {
+      var row = document.createElement('div');
+      row.className = 'team' + (max > 0 && t.p === max ? ' lead' : '');
+      var inp = document.createElement('input');
+      inp.value = t.n; inp.maxLength = 24; inp.setAttribute('aria-label', 'Nombre del equipo ' + (i + 1));
+      inp.addEventListener('input', function () { t.n = inp.value; save(); });
+      var minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', 'Quitar un punto');
+      var sc = document.createElement('span'); sc.className = 'score'; sc.textContent = t.p;
+      var plus = document.createElement('button'); plus.type = 'button'; plus.className = 'plus'; plus.textContent = '+'; plus.setAttribute('aria-label', 'Añadir un punto');
+      minus.addEventListener('click', function () { if (t.p > 0) { t.p--; save(); renderTeams(); } });
+      plus.addEventListener('click', function () { t.p++; beep(988, 0.08, 0.06, 'triangle'); save(); renderTeams(); });
+      row.appendChild(inp); row.appendChild(minus); row.appendChild(sc); row.appendChild(plus);
+      teamsEl.appendChild(row);
+    });
+  }
+  countSel.addEventListener('change', function () { teamCount = parseInt(countSel.value, 10); save(); renderTeams(); });
+  $('zeroBtn').addEventListener('click', function () { teams.forEach(function (t) { t.p = 0; }); save(); renderTeams(); });
+
+  /* ---------- init ---------- */
+  renderTeams();
+  updateCounter();
+  setup();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { renderWheel(); draw(); });
+  var rz;
+  window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(setup, 120); });
+  if (window.ResizeObserver) new ResizeObserver(function () { clearTimeout(rz); rz = setTimeout(setup, 60); }).observe(wrap);
+});
+</script>
+</body>
+</html>

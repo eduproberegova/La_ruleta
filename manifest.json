@@ -1,0 +1,16 @@
+{
+  "name": "La ruleta de las condiciones · @eduproberegova",
+  "short_name": "Ruleta",
+  "description": "Si… + imperfecto / pluscuamperfecto de subjuntivo. Ruleta interactiva para la clase de español.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F7FB",
+  "theme_color": "#C8203F",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
